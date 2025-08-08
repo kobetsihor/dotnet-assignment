@@ -4,12 +4,12 @@ namespace DAL.Repositories
 {
     public interface IAnimalsRepository
     {
-        IEnumerable<Animal> GetAll();
+        Task<List<Animal>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Animal? GetById(Guid id);
+        Task<Animal?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-        void Add(Animal animal);
+        Task AddAsync(Animal animal, CancellationToken cancellationToken = default);
 
-        void Remove(Guid id);
+        Task RemoveAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

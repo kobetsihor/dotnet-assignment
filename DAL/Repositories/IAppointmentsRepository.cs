@@ -4,10 +4,10 @@ namespace DAL.Repositories
 {
     public interface IAppointmentsRepository
     {
-        IEnumerable<Appointment> GetAll();
+        Task<List<Appointment>> GetAllAsync(CancellationToken cancellationToken = default);
 
-        Appointment? GetById(Guid id);
+        Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-        void Add(Appointment appointment);
+        Task AddAsync(Appointment appointment, CancellationToken cancellationToken = default);
     }
 }

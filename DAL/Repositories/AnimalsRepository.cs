@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
@@ -7,23 +8,25 @@ namespace DAL.Repositories
     {
         private readonly AppDbContext _context = context;
 
-        public IEnumerable<Animal> GetAll() => _context.Animals.ToList();
+        public Task<List<Animal>> GetAllAsync(CancellationToken cancellationToken = default)
+            => _context.Animals.ToListAsync(cancellationToken);
 
-        public Animal? GetById(Guid id) => _context.Animals.Find(id);
+        public Task<Animal?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+            => _context.Animals.FindAsync([id], cancellationToken).AsTask();
 
-        public void Add(Animal animal)
+        public async Task AddAsync(Animal animal, CancellationToken cancellationToken = default)
         {
-            _context.Animals.Add(animal);
-            _context.SaveChanges();
+            await _context.Animals.AddAsync(animal, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public void Remove(Guid id)
+        public async Task RemoveAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var animal = _context.Animals.Find(id);
+            var animal = await _context.Animals.FindAsync([id], cancellationToken);
             if (animal != null)
             {
                 _context.Animals.Remove(animal);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync(cancellationToken);
             }
         }
     }

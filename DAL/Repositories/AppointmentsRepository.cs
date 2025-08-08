@@ -1,5 +1,6 @@
 ﻿using DAL.Entities;
 using DAL.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
@@ -7,14 +8,16 @@ namespace DAL.Repositories
     {
         private readonly AppDbContext _context = context;
 
-        public IEnumerable<Appointment> GetAll() => _context.Appointments.ToList();
+        public Task<List<Appointment>> GetAllAsync(CancellationToken cancellationToken = default)
+            => _context.Appointments.ToListAsync(cancellationToken);
 
-        public Appointment? GetById(Guid id) => _context.Appointments.Find(id);
+        public Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+            => _context.Appointments.FindAsync([id], cancellationToken).AsTask();
 
-        public void Add(Appointment appointment)
+        public async Task AddAsync(Appointment appointment, CancellationToken cancellationToken = default)
         {
-            _context.Appointments.Add(appointment);
-            _context.SaveChanges();
+            await _context.Appointments.AddAsync(appointment, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

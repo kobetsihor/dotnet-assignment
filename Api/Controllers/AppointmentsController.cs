@@ -11,9 +11,9 @@ public class AppointmentsController(IAppointmentsRepository appointmentsReposito
     private readonly IAppointmentsRepository _appointmentsRepository = appointmentsRepository;
 
     [HttpGet("{id}")]
-    public ActionResult<Appointment> GetAppointment(Guid id)
+    public async Task<ActionResult<Appointment>> GetAppointment(Guid id, CancellationToken cancellationToken)
     {
-        var appointment = _appointmentsRepository.GetById(id);
+        var appointment = await _appointmentsRepository.GetByIdAsync(id, cancellationToken);
         if (appointment == null)
         {
             return NotFound();
@@ -22,7 +22,7 @@ public class AppointmentsController(IAppointmentsRepository appointmentsReposito
     }
 
     [HttpPost]
-    public ActionResult<Animal> CreateAppointment([FromBody] Appointment appointment)
+    public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] Appointment appointment, CancellationToken cancellationToken)
     {
         if (appointment == null)
         {
@@ -36,7 +36,7 @@ public class AppointmentsController(IAppointmentsRepository appointmentsReposito
 
         appointment.Id = Guid.NewGuid();
 
-        _appointmentsRepository.Add(appointment);
+        await _appointmentsRepository.AddAsync(appointment, cancellationToken);
 
         return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment);
     }

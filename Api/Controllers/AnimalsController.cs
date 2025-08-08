@@ -11,14 +11,14 @@ public class AnimalsController(IAnimalsRepository animalsRepository) : Controlle
     private readonly IAnimalsRepository _animalsRepository = animalsRepository;
 
     [HttpGet("{id}")]
-    public ActionResult<Animal> GetAnimal(Guid id)
+    public async Task<ActionResult<Animal>> GetAnimal(Guid id, CancellationToken cancellationToken)
     {
-        var animal = _animalsRepository.GetById(id);
+        var animal = await _animalsRepository.GetByIdAsync(id, cancellationToken);
         return Ok(animal);
     }
 
     [HttpPost]
-    public ActionResult<Animal> CreateAnimal([FromBody] Animal animal)
+    public async Task<ActionResult<Animal>> CreateAnimal([FromBody] Animal animal, CancellationToken cancellationToken)
     {
         if (animal == null)
         {
@@ -32,21 +32,21 @@ public class AnimalsController(IAnimalsRepository animalsRepository) : Controlle
 
         animal.Id = Guid.NewGuid();
 
-        _animalsRepository.Add(animal);
+        await _animalsRepository.AddAsync(animal, cancellationToken);
 
         return CreatedAtAction(nameof(GetAnimal), new { id = animal.Id }, animal);
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteAnimal(Guid id)
+    public async Task<IActionResult> DeleteAnimal(Guid id, CancellationToken cancellationToken)
     {
-        var animal = _animalsRepository.GetById(id);
+        var animal = await _animalsRepository.GetByIdAsync(id, cancellationToken);
         if (animal == null)
         {
             return NotFound("Animal not found.");
         }
 
-        _animalsRepository.Remove(id);
+        await _animalsRepository.RemoveAsync(id, cancellationToken);
         return NoContent();
     }
 }
