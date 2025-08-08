@@ -1,6 +1,8 @@
-using DAL.Entities;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Infrastructure.Extensions;
+using Contracts.Requests;
+using Contracts.Responses;
 
 namespace Api.Controllers;
 
@@ -11,30 +13,35 @@ public class AnimalsController(IAnimalsRepository animalsRepository) : Controlle
     private readonly IAnimalsRepository _animalsRepository = animalsRepository;
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Animal>> GetAnimal(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<AnimalResponse>> GetAnimal(Guid id, CancellationToken cancellationToken)
     {
         var animal = await _animalsRepository.GetByIdAsync(id, cancellationToken);
-        return Ok(animal);
+        if (animal == null)
+        {
+            return NotFound("Animal not found.");
+        }
+
+        return Ok(animal.ToResponse());
     }
 
     [HttpPost]
-    public async Task<ActionResult<Animal>> CreateAnimal([FromBody] Animal animal, CancellationToken cancellationToken)
+    public async Task<ActionResult<AnimalResponse>> CreateAnimal([FromBody] AnimalRequest request, CancellationToken cancellationToken)
     {
-        if (animal == null)
+        if (request == null)
         {
-            return BadRequest("Animal cannot be null.");
+            return BadRequest("Animal request cannot be null.");
         }
 
-        if (string.IsNullOrWhiteSpace(animal.Name))
+        if (string.IsNullOrWhiteSpace(request.Name))
         {
             return BadRequest("Animal name is required.");
         }
 
-        animal.Id = Guid.NewGuid();
+        var animal = request.ToEntity();
 
         await _animalsRepository.AddAsync(animal, cancellationToken);
 
-        return CreatedAtAction(nameof(GetAnimal), new { id = animal.Id }, animal);
+        return CreatedAtAction(nameof(GetAnimal), new { id = animal.Id }, animal.ToResponse());
     }
 
     [HttpDelete("{id}")]
