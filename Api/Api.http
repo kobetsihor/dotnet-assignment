@@ -1,6 +1,47 @@
-@Api_HostAddress = http://localhost:5160
+@Api_HostAddress = https://localhost:7223
 
-GET {{Api_HostAddress}}/weatherforecast/
+### Get Animal by Id
+GET {{Api_HostAddress}}/api/animals/{id}
 Accept: application/json
+
+###
+
+### Create Animal
+POST {{Api_HostAddress}}/api/animals
+Content-Type: application/json
+
+{
+  "name": "Fluffy",
+  "species": "Cat",
+  "breed": "Persian",
+  "ownerName": "Alice"
+}
+
+###
+
+### Delete Animal
+DELETE {{Api_HostAddress}}/api/animals/{id}
+Accept: application/json
+
+###
+
+### Get Appointment by Id
+GET {{Api_HostAddress}}/api/appointments/{id}
+Accept: application/json
+
+###
+
+### Create Appointment
+POST {{Api_HostAddress}}/api/appointments
+Content-Type: application/json
+
+{
+  "animalId": "00000000-0000-0000-0000-000000000000",
+  "customerId": "00000000-0000-0000-0000-000000000000",
+  "veterinarianId": "00000000-0000-0000-0000-000000000000",
+  "startTime": "2025-08-08T10:00:00",
+  "endTime": "2025-08-08T10:30:00",
+  "status": "Scheduled"
+}
 
 ###
