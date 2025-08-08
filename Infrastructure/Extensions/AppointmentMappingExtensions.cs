@@ -35,5 +35,18 @@ namespace Infrastructure.Extensions
                 Status = AppointmentStatus.Scheduled
             };
         }
+
+        public static VetAppointmentResponse ToVetResponse(this Appointment appointment, Animal animal)
+        {
+            return new VetAppointmentResponse
+            {
+                Id = appointment.Id,
+                StartTime = appointment.StartTime,
+                EndTime = appointment.EndTime,
+                AnimalName = animal.Name,
+                OwnerName = animal.OwnerName,
+                Status = appointment.Status.ToString()
+            };
+        }
     }
 }

@@ -19,5 +19,16 @@ namespace DAL.Repositories
             await _context.Appointments.AddAsync(appointment, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
         }
+
+        public Task<List<Appointment>> GetByVeterinarianAndDateRangeAsync(
+            Guid veterinarianId,
+            DateTime startDate,
+            DateTime endDate,
+            CancellationToken cancellationToken = default)
+                => _context.Appointments
+                      .Where(a => a.VeterinarianId == veterinarianId
+                                  && a.StartTime >= startDate
+                                  && a.EndTime <= endDate)
+                      .ToListAsync(cancellationToken);
     }
 }
