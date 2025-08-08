@@ -3,20 +3,27 @@ using DAL.Data;
 
 namespace DAL.Repositories
 {
-    public class AnimalsRepository : IAnimalsRepository
+    public class AnimalsRepository(AppDbContext context) : IAnimalsRepository
     {
-        public IEnumerable<Animal> GetAll() => AnimalData.Animals;
+        private readonly AppDbContext _context = context;
 
-        public Animal? GetById(Guid id) => AnimalData.Animals.FirstOrDefault(a => a.Id == id);
+        public IEnumerable<Animal> GetAll() => _context.Animals.ToList();
 
-        public void Add(Animal animal) => AnimalData.Animals.Add(animal);
+        public Animal? GetById(Guid id) => _context.Animals.Find(id);
+
+        public void Add(Animal animal)
+        {
+            _context.Animals.Add(animal);
+            _context.SaveChanges();
+        }
 
         public void Remove(Guid id)
         {
-            var animal = GetById(id);
+            var animal = _context.Animals.Find(id);
             if (animal != null)
             {
-                AnimalData.Animals.Remove(animal);
+                _context.Animals.Remove(animal);
+                _context.SaveChanges();
             }
         }
     }

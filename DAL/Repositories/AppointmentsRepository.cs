@@ -3,12 +3,18 @@ using DAL.Data;
 
 namespace DAL.Repositories
 {
-    public class AppointmentsRepository : IAppointmentsRepository
+    public class AppointmentsRepository(AppDbContext context) : IAppointmentsRepository
     {
-        public IEnumerable<Appointment> GetAll() => AppointmentData.Appointments;
+        private readonly AppDbContext _context = context;
 
-        public Appointment? GetById(Guid id) => AppointmentData.Appointments.FirstOrDefault(a => a.Id == id);
+        public IEnumerable<Appointment> GetAll() => _context.Appointments.ToList();
 
-        public void Add(Appointment appointment) => AppointmentData.Appointments.Add(appointment);
+        public Appointment? GetById(Guid id) => _context.Appointments.Find(id);
+
+        public void Add(Appointment appointment)
+        {
+            _context.Appointments.Add(appointment);
+            _context.SaveChanges();
+        }
     }
 }
