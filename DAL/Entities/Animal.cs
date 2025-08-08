@@ -1,4 +1,4 @@
-namespace Api.Models;
+namespace DAL.Entities;
 
 public class Animal
 {

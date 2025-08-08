@@ -1,13 +1,22 @@
-using Api.Data;
-using Api.Models;
+using DAL.Entities;
+using DAL.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AnimalController : ControllerBase
+public class AnimalsController(IAnimalsRepository animalsRepository) : ControllerBase
 {
+    private readonly IAnimalsRepository _animalsRepository = animalsRepository;
+
+    [HttpGet("{id}")]
+    public ActionResult<Animal> GetAnimal(Guid id)
+    {
+        var animal = _animalsRepository.GetById(id);
+        return Ok(animal);
+    }
+
     [HttpPost]
     public ActionResult<Animal> CreateAnimal([FromBody] Animal animal)
     {
@@ -23,28 +32,21 @@ public class AnimalController : ControllerBase
 
         animal.Id = Guid.NewGuid();
 
-        AnimalData.Animals.Add(animal);
+        _animalsRepository.Add(animal);
 
         return CreatedAtAction(nameof(GetAnimal), new { id = animal.Id }, animal);
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult<Animal> GetAnimal(Guid id)
-    {
-        var animal = AnimalData.Animals.FirstOrDefault(a => a.Id == id);
-        return Ok(animal);
     }
 
     [HttpDelete("{id}")]
     public IActionResult DeleteAnimal(Guid id)
     {
-        var animal = AnimalData.Animals.FirstOrDefault(a => a.Id == id);
+        var animal = _animalsRepository.GetById(id);
         if (animal == null)
         {
             return NotFound("Animal not found.");
         }
 
-        AnimalData.Animals.Remove(animal);
+        _animalsRepository.Remove(id);
         return NoContent();
     }
 }

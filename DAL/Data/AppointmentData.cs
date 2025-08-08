@@ -1,6 +1,6 @@
-using Api.Models;
+using DAL.Entities;
 
-namespace Api.Data;
+namespace DAL.Data;
 
 internal static class AppointmentData
 {

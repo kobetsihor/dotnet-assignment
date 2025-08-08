@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,10 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+builder.Services.AddSingleton<IAnimalsRepository, AnimalsRepository>();
+builder.Services.AddSingleton<IAppointmentsRepository, AppointmentsRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

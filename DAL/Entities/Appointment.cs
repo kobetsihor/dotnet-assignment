@@ -1,13 +1,4 @@
-namespace Api.Models;
-
-public enum AppointmentStatus
-{
-    Scheduled,
-    InProgress,
-    Completed,
-    Cancelled,
-    NoShow
-}
+namespace DAL.Entities;
 
 public class Appointment
 {

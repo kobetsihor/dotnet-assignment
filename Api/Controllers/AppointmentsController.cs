@@ -1,13 +1,26 @@
-using Api.Data;
-using Api.Models;
+using DAL.Entities;
+using DAL.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AppointmentController : ControllerBase
+public class AppointmentsController(IAppointmentsRepository appointmentsRepository) : ControllerBase
 {
+    private readonly IAppointmentsRepository _appointmentsRepository = appointmentsRepository;
+
+    [HttpGet("{id}")]
+    public ActionResult<Appointment> GetAppointment(Guid id)
+    {
+        var appointment = _appointmentsRepository.GetById(id);
+        if (appointment == null)
+        {
+            return NotFound();
+        }
+        return Ok(appointment);
+    }
+
     [HttpPost]
     public ActionResult<Animal> CreateAppointment([FromBody] Appointment appointment)
     {
@@ -23,19 +36,8 @@ public class AppointmentController : ControllerBase
 
         appointment.Id = Guid.NewGuid();
 
-        AppointmentData.Appointments.Add(appointment);
+        _appointmentsRepository.Add(appointment);
 
         return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment);
-    }
-
-    [HttpGet("{id}")]
-    public ActionResult<Appointment> GetAppointment(Guid id)
-    {
-        var appointment = AppointmentData.Appointments.FirstOrDefault(a => a.Id == id);
-        if (appointment == null)
-        {
-            return NotFound();
-        }
-        return Ok(appointment);
     }
 }
