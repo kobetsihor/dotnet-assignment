@@ -1,3 +1,5 @@
+using Calendar.DataAccess.Enums;
+
 namespace Calendar.DataAccess.Entities;
 
 public class Appointment

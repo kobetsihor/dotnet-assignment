@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Calendar.Contracts\Calendar.Contracts.csproj" />
+    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjectionFixed" Version="5.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Calendar.DataAccess\Calendar.DataAccess.csproj" />
+    <ProjectReference Include="..\Calendar.Domain.Models\Calendar.Domain.Models.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,59 +1,59 @@
-using Calendar.Contracts.Responses;
-using Calendar.DataAccess.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using Calendar.Infrastructure.Extensions;
 using Calendar.Contracts.Requests;
+using Calendar.Contracts.Responses;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using Calendar.Domain.Models.Input;
 
-namespace Calendar.Api.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class AnimalsController(IAnimalsRepository animalsRepository) : ControllerBase
+namespace Calendar.Api.Controllers
 {
-    private readonly IAnimalsRepository _animalsRepository = animalsRepository;
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AnimalResponse>> GetAnimal(Guid id, CancellationToken cancellationToken)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AnimalsController(IMediator mediator, IMapper mapper) : ControllerBase
     {
-        var animal = await _animalsRepository.GetByIdAsync(id, cancellationToken);
-        if (animal == null)
+        private readonly IMediator _mediator = mediator;
+        private readonly IMapper _mapper = mapper;
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CreateAnimalResponse>> GetAnimal(Guid id, CancellationToken cancellationToken)
         {
-            return NotFound("Animal not found.");
+            var input = new GetAnimalInput { Id = id };
+            var animal = await _mediator.Send(input, cancellationToken);
+            if (animal == null)
+            {
+                return NotFound("Animal not found.");
+            }
+
+            var response = _mapper.Map<CreateAnimalResponse>(animal);
+            return Ok(response);
         }
 
-        return Ok(animal.ToResponse());
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<AnimalResponse>> CreateAnimal([FromBody] AnimalRequest request, CancellationToken cancellationToken)
-    {
-        if (request == null)
+        [HttpPost]
+        public async Task<ActionResult<CreateAnimalResponse>> CreateAnimal([FromBody] CreateAnimalRequest request, CancellationToken cancellationToken)
         {
-            return BadRequest("Animal request cannot be null.");
+            if (request == null)
+            {
+                return BadRequest("Animal request cannot be null.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return BadRequest("Animal name is required.");
+            }
+
+            var input = _mapper.Map<CreateAnimalInput>(request);
+            var animal = await _mediator.Send(input, cancellationToken);
+            var response = _mapper.Map<CreateAnimalResponse>(animal);
+
+            return CreatedAtAction(nameof(GetAnimal), new { id = response.Id }, response);
         }
 
-        if (string.IsNullOrWhiteSpace(request.Name))
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAnimal(Guid id, CancellationToken cancellationToken)
         {
-            return BadRequest("Animal name is required.");
+            var input = new DeleteAnimalInput { Id = id };
+            await _mediator.Send(input, cancellationToken);
+            return NoContent();
         }
-
-        var animal = request.ToEntity();
-
-        await _animalsRepository.AddAsync(animal, cancellationToken);
-
-        return CreatedAtAction(nameof(GetAnimal), new { id = animal.Id }, animal.ToResponse());
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteAnimal(Guid id, CancellationToken cancellationToken)
-    {
-        var animal = await _animalsRepository.GetByIdAsync(id, cancellationToken);
-        if (animal == null)
-        {
-            return NotFound("Animal not found.");
-        }
-
-        await _animalsRepository.RemoveAsync(id, cancellationToken);
-        return NoContent();
     }
 }

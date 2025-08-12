@@ -1,5 +1,8 @@
+using Calendar.Api.Mapping;
 using Calendar.DataAccess.Data;
 using Calendar.DataAccess.Repositories;
+using Calendar.Domain.Handlers;
+using Calendar.Domain.Mapping;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -13,6 +16,14 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblies(typeof(CreateAnimalHandler).Assembly));
+builder.Services.AddAutoMapper(
+    cfg =>
+    {
+        cfg.AddProfile<ContractDomainMappingProfile>();
+        cfg.AddProfile<DomainEntityMappingProfile>();
     });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

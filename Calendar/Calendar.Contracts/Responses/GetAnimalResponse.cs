@@ -1,7 +1,9 @@
-namespace Calendar.Contracts.Requests
+﻿namespace Calendar.Contracts.Responses
 {
-    public class AnimalRequest
+    public class GetAnimalResponse
     {
+        public Guid Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
 
         public DateTime BirthDate { get; set; }

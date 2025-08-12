@@ -1,4 +1,4 @@
-﻿namespace Calendar.DataAccess.Entities
+﻿namespace Calendar.DataAccess.Enums
 {
     public enum AppointmentStatus
     {

@@ -1,73 +1,69 @@
 using Calendar.Contracts.Requests;
 using Calendar.Contracts.Responses;
-using Calendar.DataAccess.Repositories;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Calendar.Infrastructure.Extensions;
+using AutoMapper;
+using Calendar.Domain.Models.Input;
 
-namespace Calendar.Api.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class AppointmentsController(
-    IAppointmentsRepository appointmentsRepository,
-    IAnimalsRepository animalsRepository) : ControllerBase
+namespace Calendar.Api.Controllers
 {
-    private readonly IAppointmentsRepository _appointmentsRepository = appointmentsRepository;
-    private readonly IAnimalsRepository _animalsRepository = animalsRepository;
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<AppointmentResponse>> GetAppointment(Guid id, CancellationToken cancellationToken)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AppointmentsController(IMediator mediator, IMapper mapper) : ControllerBase
     {
-        var appointment = await _appointmentsRepository.GetByIdAsync(id, cancellationToken);
-        if (appointment == null)
+        private readonly IMediator _mediator = mediator;
+        private readonly IMapper _mapper = mapper;
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetAppointmentResponse>> GetAppointment(Guid id, CancellationToken cancellationToken)
         {
-            return NotFound();
+            var input = new GetAppointmentInput { Id = id };
+            var appointment = await _mediator.Send(input, cancellationToken);
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            var response = _mapper.Map<GetAppointmentResponse>(appointment);
+            return Ok(response);
         }
 
-        return Ok(appointment.ToResponse());
-    }
-
-    [HttpGet("vet/{veterinarianId}")]
-    public async Task<ActionResult<List<VetAppointmentResponse>>> GetVetAppointments(
-        Guid veterinarianId,
-        [FromQuery] VetAppointmentsQueryRequest query,
-        CancellationToken cancellationToken)
-    {
-        var appointments = await _appointmentsRepository
-            .GetByVeterinarianAndDateRangeAsync(
-                veterinarianId,
-                query.StartDate,
-                query.EndDate,
-                cancellationToken);
-
-        var animalIds = appointments.Select(a => a.AnimalId).Distinct().ToList();
-        var animals = await _animalsRepository.GetAllAsync(cancellationToken);
-        var animalsById = animals.Where(a => animalIds.Contains(a.Id)).ToDictionary(a => a.Id);
-
-        var result = appointments
-            .Select(a => a.ToVetResponse(animalsById[a.AnimalId]))
-            .ToList();
-
-        return Ok(result);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<AppointmentResponse>> CreateAppointment([FromBody] AppointmentRequest request, CancellationToken cancellationToken)
-    {
-        if (request == null)
+        [HttpGet("vet/{veterinarianId}")]
+        public async Task<ActionResult<GetVetAppointmentsResponse>> GetVetAppointments(
+            Guid veterinarianId,
+            [FromQuery] GetVetAppointmentsRequest request,
+            CancellationToken cancellationToken)
         {
-            return BadRequest("Appointment request cannot be null.");
+            var input = new GetVetAppointmentsInput
+            {
+                VeterinarianId = veterinarianId,
+                StartDate = request.StartDate,
+                EndDate = request.EndDate
+            };
+
+            var result = await _mediator.Send(input, cancellationToken);
+            var response = _mapper.Map<GetVetAppointmentsResponse>(result);
+            return Ok(response);
         }
 
-        if (request.AnimalId == Guid.Empty || request.CustomerId == Guid.Empty)
+        [HttpPost]
+        public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {
-            return BadRequest("AnimalId and CustomerId are required.");
+            if (request == null)
+            {
+                return BadRequest("Appointment request cannot be null.");
+            }
+
+            if (request.AnimalId == Guid.Empty || request.CustomerId == Guid.Empty)
+            {
+                return BadRequest("AnimalId and CustomerId are required.");
+            }
+
+            var input = _mapper.Map<CreateAppointmentInput>(request);
+            var appointment = await _mediator.Send(input, cancellationToken);
+            var response = _mapper.Map<GetAppointmentResponse>(appointment);
+
+            return CreatedAtAction(nameof(GetAppointment), new { id = response.Id }, response);
         }
-
-        var appointment = request.ToEntity();
-
-        await _appointmentsRepository.AddAsync(appointment, cancellationToken);
-
-        return CreatedAtAction(nameof(GetAppointment), new { id = appointment.Id }, appointment.ToResponse());
     }
 }

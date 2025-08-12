@@ -1,6 +1,6 @@
-namespace Calendar.Contracts.Responses
+﻿namespace Calendar.Domain.Models.Output
 {
-    public class AppointmentResponse
+    public class CreateAppointmentOutput
     {
         public Guid Id { get; set; }
 

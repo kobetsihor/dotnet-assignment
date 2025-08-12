@@ -1,8 +1,6 @@
-using System;
-
 namespace Calendar.Contracts.Requests
 {
-    public class VetAppointmentsQueryRequest
+    public class GetVetAppointmentsRequest
     {
         public DateTime StartDate { get; set; }
 
