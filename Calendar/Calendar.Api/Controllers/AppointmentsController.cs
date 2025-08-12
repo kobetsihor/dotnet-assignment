@@ -87,5 +87,27 @@ namespace Calendar.Api.Controllers
 
             return CreatedAtAction(nameof(GetAppointment), new { id = response.Id }, response);
         }
+
+        /// <summary>
+        /// Updates the status of an appointment.
+        /// </summary>
+        [HttpPatch("{id}/status")]
+        public async Task<ActionResult<GetAppointmentResponse>> UpdateAppointmentStatus(
+            Guid id,
+            [FromBody] UpdateAppointmentStatusRequest request,
+            CancellationToken cancellationToken)
+        {
+            if (request == null)
+                return BadRequest("Invalid request.");
+
+            var input = new UpdateAppointmentStatusInput
+            {
+                AppointmentId = id,
+                Status = request.Status
+            };
+           
+            var result = await _mediator.Send(input, cancellationToken);
+            return Ok(result);
+        }
     }
 }

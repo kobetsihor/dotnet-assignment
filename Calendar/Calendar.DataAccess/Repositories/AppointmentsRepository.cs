@@ -14,12 +14,6 @@ namespace Calendar.DataAccess.Repositories
         public Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
             => _context.Appointments.FindAsync([id], cancellationToken).AsTask();
 
-        public async Task AddAsync(Appointment appointment, CancellationToken cancellationToken = default)
-        {
-            await _context.Appointments.AddAsync(appointment, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-        }
-
         public Task<List<Appointment>> GetByVeterinarianAndDateRangeAsync(
             Guid veterinarianId,
             DateTime startDate,
@@ -30,5 +24,17 @@ namespace Calendar.DataAccess.Repositories
                                   && a.StartTime >= startDate
                                   && a.EndTime <= endDate)
                       .ToListAsync(cancellationToken);
+
+        public async Task AddAsync(Appointment appointment, CancellationToken cancellationToken = default)
+        {
+            await _context.Appointments.AddAsync(appointment, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UpdateAsync(Appointment appointment, CancellationToken cancellationToken = default)
+        {
+            _context.Appointments.Update(appointment);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
     }
 }
