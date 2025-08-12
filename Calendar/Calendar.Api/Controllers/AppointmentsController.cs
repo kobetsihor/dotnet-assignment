@@ -7,6 +7,9 @@ using Calendar.Domain.Models.Input;
 
 namespace Calendar.Api.Controllers
 {
+    /// <summary>
+    /// Controller for managing appointment-related endpoints.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentsController(IMediator mediator, IMapper mapper) : ControllerBase
@@ -14,6 +17,12 @@ namespace Calendar.Api.Controllers
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
 
+        /// <summary>
+        /// Gets a single appointment by its unique identifier.
+        /// </summary>
+        /// <param name="id">Appointment ID.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Appointment details or 404 if not found.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<GetAppointmentResponse>> GetAppointment(Guid id, CancellationToken cancellationToken)
         {
@@ -28,6 +37,13 @@ namespace Calendar.Api.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Gets all appointments for a specific veterinarian within a date range.
+        /// </summary>
+        /// <param name="veterinarianId">Veterinarian ID.</param>
+        /// <param name="request">Date range request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>List of vet appointments.</returns>
         [HttpGet("vet/{veterinarianId}")]
         public async Task<ActionResult<GetVetAppointmentsResponse>> GetVetAppointments(
             Guid veterinarianId,
@@ -46,6 +62,12 @@ namespace Calendar.Api.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Creates a new appointment.
+        /// </summary>
+        /// <param name="request">Appointment creation request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Created appointment details.</returns>
         [HttpPost]
         public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {

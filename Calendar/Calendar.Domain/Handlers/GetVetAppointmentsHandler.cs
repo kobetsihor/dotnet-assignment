@@ -6,6 +6,9 @@ using Calendar.Domain.Models.Output;
 
 namespace Calendar.Domain.Handlers
 {
+    /// <summary>
+    /// Handles retrieval of veterinarian appointments within a date range.
+    /// </summary>
     public class GetVetAppointmentsHandler(
         IAppointmentsRepository appointmentsRepository,
         IAnimalsRepository animalsRepository,
@@ -15,6 +18,9 @@ namespace Calendar.Domain.Handlers
         private readonly IAnimalsRepository _animalsRepository = animalsRepository;
         private readonly IMapper _mapper = mapper;
 
+        /// <summary>
+        /// Retrieves appointments for a veterinarian, including animal and owner details.
+        /// </summary>
         public async Task<GetVetAppointmentsOutput> Handle(GetVetAppointmentsInput input, CancellationToken cancellationToken)
         {
             var appointments = await _appointmentsRepository
