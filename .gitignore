@@ -55,3 +55,7 @@ nunit-*.xml
 /Api/app.db
 /Api/app.db-shm
 /Api/app.db-wal
+/Calendar/Calendar.Api/app.db
+/Calendar/Calendar.Api/app.db-shm
+/Calendar/Calendar.Api/app.db-wal
+/Calendar/Calendar.Api/.DS_Store
