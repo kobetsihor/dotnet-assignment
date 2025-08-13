@@ -1,4 +1,5 @@
 using Calendar.Api.Mapping;
+using Calendar.Api.Middleware;
 using Calendar.DataAccess.Data;
 using Calendar.DataAccess.Repositories;
 using Calendar.Domain.Handlers;
@@ -48,5 +49,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 app.Run();

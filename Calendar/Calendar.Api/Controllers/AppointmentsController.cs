@@ -98,7 +98,9 @@ namespace Calendar.Api.Controllers
             CancellationToken cancellationToken)
         {
             if (request == null)
+            {
                 return BadRequest("Invalid request.");
+            }
 
             var input = new UpdateAppointmentStatusInput
             {
