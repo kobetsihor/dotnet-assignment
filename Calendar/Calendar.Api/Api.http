@@ -31,6 +31,12 @@ Accept: application/json
 
 ###
 
+### Get Appointments for Veterinarian in Date Range
+GET {{Api_HostAddress}}/api/appointments/vet/00000000-0000-0000-0000-000000000000?StartDate=2025-08-01T00:00:00&EndDate=2025-08-31T23:59:59
+Accept: application/json
+
+###
+
 ### Create Appointment
 POST {{Api_HostAddress}}/api/appointments
 Content-Type: application/json
@@ -42,6 +48,14 @@ Content-Type: application/json
   "startTime": "2025-08-08T10:00:00",
   "endTime": "2025-08-08T10:30:00",
   "status": "Scheduled"
+}
+
+### Update Appointment Status
+PATCH {{Api_HostAddress}}/api/appointments/00000000-0000-0000-0000-000000000000/status
+Content-Type: application/json
+
+{
+  "status": "Completed"
 }
 
 ###
