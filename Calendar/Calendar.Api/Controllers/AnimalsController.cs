@@ -19,11 +19,6 @@ namespace Calendar.Api.Controllers
         {
             var input = new GetAnimalInput { Id = id };
             var animal = await _mediator.Send(input, cancellationToken);
-            if (animal == null)
-            {
-                return NotFound("Animal not found.");
-            }
-
             var response = _mapper.Map<CreateAnimalResponse>(animal);
             return Ok(response);
         }
@@ -31,16 +26,6 @@ namespace Calendar.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<CreateAnimalResponse>> CreateAnimal([FromBody] CreateAnimalRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                return BadRequest("Animal request cannot be null.");
-            }
-
-            if (string.IsNullOrWhiteSpace(request.Name))
-            {
-                return BadRequest("Animal name is required.");
-            }
-
             var input = _mapper.Map<CreateAnimalInput>(request);
             var animal = await _mediator.Send(input, cancellationToken);
             var response = _mapper.Map<CreateAnimalResponse>(animal);

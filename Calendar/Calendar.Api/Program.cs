@@ -1,9 +1,12 @@
 using Calendar.Api.Mapping;
 using Calendar.Api.Middleware;
+using Calendar.Api.Validation;
 using Calendar.DataAccess.Data;
 using Calendar.DataAccess.Repositories;
 using Calendar.Domain.Handlers;
 using Calendar.Domain.Mapping;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -19,6 +22,9 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAnimalRequestValidator>();
 builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblies(typeof(CreateAnimalHandler).Assembly));
 builder.Services.AddAutoMapper(
     cfg =>

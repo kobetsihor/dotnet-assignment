@@ -28,11 +28,6 @@ namespace Calendar.Api.Controllers
         {
             var input = new GetAppointmentInput { Id = id };
             var appointment = await _mediator.Send(input, cancellationToken);
-            if (appointment == null)
-            {
-                return NotFound();
-            }
-
             var response = _mapper.Map<GetAppointmentResponse>(appointment);
             return Ok(response);
         }
@@ -71,16 +66,6 @@ namespace Calendar.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<GetAppointmentResponse>> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                return BadRequest("Appointment request cannot be null.");
-            }
-
-            if (request.AnimalId == Guid.Empty || request.CustomerId == Guid.Empty)
-            {
-                return BadRequest("AnimalId and CustomerId are required.");
-            }
-
             var input = _mapper.Map<CreateAppointmentInput>(request);
             var appointment = await _mediator.Send(input, cancellationToken);
             var response = _mapper.Map<GetAppointmentResponse>(appointment);
@@ -97,11 +82,6 @@ namespace Calendar.Api.Controllers
             [FromBody] UpdateAppointmentStatusRequest request,
             CancellationToken cancellationToken)
         {
-            if (request == null)
-            {
-                return BadRequest("Invalid request.");
-            }
-
             var input = new UpdateAppointmentStatusInput
             {
                 AppointmentId = id,
