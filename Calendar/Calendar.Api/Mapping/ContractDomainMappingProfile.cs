@@ -28,11 +28,10 @@ namespace Calendar.Api.Mapping
             CreateMap<CreateAppointmentRequest, CreateAppointmentOutput>();
             CreateMap<GetAppointmentOutput, CreateAppointmentOutput>();
 
-            CreateMap<Domain.Models.Output.VetAppointment, GetVetAppointmentsResponse>();
-            CreateMap<GetVetAppointmentsOutput, GetVetAppointmentsResponse>();
-            CreateMap<GetVetAppointmentsOutput, VetAppointment>();
             CreateMap<GetVetAppointmentsOutput, GetVetAppointmentsResponse>()
                 .ForMember(dest => dest.Appointments, opt => opt.MapFrom(src => src.Appointments));
+            
+            CreateMap<Domain.Models.Output.VetAppointment, VetAppointment>();
         }
     }
 }
